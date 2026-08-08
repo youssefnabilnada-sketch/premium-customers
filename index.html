@@ -210,6 +210,13 @@
   }
   .doc-thumb:hover img{ border-color:var(--gold); }
   .doc-thumb span{ display:block; font-size:9.5px; color:var(--text-1); margin-top:4px; line-height:1.3; }
+  .pdf-thumb-ic{
+    width:70px; height:52px; border-radius:8px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12);
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+    transition:.2s border-color;
+  }
+  .doc-thumb-pdf:hover .pdf-thumb-ic{ border-color:var(--gold); }
 
   .cc-amount{
     margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.1);
@@ -273,6 +280,14 @@
   .link-preview:not(:has(img.show))::after{
     content:'هتظهر معاينة الصورة هنا'; font-size:11.5px; color:var(--text-1);
   }
+  .link-preview:has(.pdf-indicator:not(.hidden))::after{ content:none; }
+  .pdf-indicator{
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    font-size:24px; color:var(--gold-soft); cursor:pointer; text-align:center;
+    width:100%; height:100%; justify-content:center;
+  }
+  .pdf-indicator span{ font-size:11.5px; color:var(--text-1); }
+  .pdf-indicator:hover span{ color:var(--gold-soft); }
 
   .extra-doc-row{ margin-bottom:8px; }
   .chk-wrap{
@@ -454,6 +469,26 @@
       </div>
     </div>
 
+    <div class="field">
+      <label>صورة البطاقة الشخصية (وش وضهر)</label>
+      <div class="row2">
+        <div>
+          <input type="url" id="fIdCardFront" placeholder="https://... لينك وش البطاقة" oninput="updatePreview('idCardFront')">
+          <div class="link-preview" id="previewBoxIdCardFront">
+            <img id="previewIdCardFront" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+            <div class="pdf-indicator hidden" id="pdfpreviewIdCardFront" onclick="openDocLink('idCardFront')">📄<span>ملف PDF - اضغط للفتح</span></div>
+          </div>
+        </div>
+        <div>
+          <input type="url" id="fIdCardBack" placeholder="https://... لينك ضهر البطاقة" oninput="updatePreview('idCardBack')">
+          <div class="link-preview" id="previewBoxIdCardBack">
+            <img id="previewIdCardBack" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+            <div class="pdf-indicator hidden" id="pdfpreviewIdCardBack" onclick="openDocLink('idCardBack')">📄<span>ملف PDF - اضغط للفتح</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="merchant-fields open" id="merchantFields">
       <div class="row2">
         <div class="field">
@@ -461,6 +496,7 @@
           <input type="url" id="fCommercial" placeholder="https://..." oninput="updatePreview('commercialReg')">
           <div class="link-preview" id="previewBoxCommercial">
             <img id="previewCommercial" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+            <div class="pdf-indicator hidden" id="pdfpreviewCommercial" onclick="openDocLink('commercialReg')">📄<span>ملف PDF - اضغط للفتح</span></div>
           </div>
         </div>
         <div class="field">
@@ -468,17 +504,8 @@
           <input type="url" id="fTax" placeholder="https://..." oninput="updatePreview('taxCard')">
           <div class="link-preview" id="previewBoxTax">
             <img id="previewTax" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+            <div class="pdf-indicator hidden" id="pdfpreviewTax" onclick="openDocLink('taxCard')">📄<span>ملف PDF - اضغط للفتح</span></div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="merchant-fields" id="employeeFields">
-      <div class="field">
-        <label>لينك صورة البطاقة الشخصية</label>
-        <input type="url" id="fIdCard" placeholder="https://..." oninput="updatePreview('idCard')">
-        <div class="link-preview" id="previewBoxIdCard">
-          <img id="previewIdCard" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
         </div>
       </div>
     </div>
@@ -495,6 +522,7 @@
         <input type="url" id="fInsurance" placeholder="https://... لينك صورة التأمين الطبي" oninput="updatePreview('insurance')">
         <div class="link-preview" id="previewBoxInsurance">
           <img id="previewInsurance" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+          <div class="pdf-indicator hidden" id="pdfpreviewInsurance" onclick="openDocLink('insurance')">📄<span>ملف PDF - اضغط للفتح</span></div>
         </div>
       </div>
 
@@ -508,6 +536,7 @@
         <input type="url" id="fWorkId" placeholder="https://... لينك صورة كارنيه الشغل" oninput="updatePreview('workId')">
         <div class="link-preview" id="previewBoxWorkId">
           <img id="previewWorkId" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+          <div class="pdf-indicator hidden" id="pdfpreviewWorkId" onclick="openDocLink('workId')">📄<span>ملف PDF - اضغط للفتح</span></div>
         </div>
       </div>
 
@@ -521,6 +550,7 @@
         <input type="url" id="fApartmentContract" placeholder="https://... لينك صورة عقد الشقة" oninput="updatePreview('apartmentContract')">
         <div class="link-preview" id="previewBoxApartmentContract">
           <img id="previewApartmentContract" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+          <div class="pdf-indicator hidden" id="pdfpreviewApartmentContract" onclick="openDocLink('apartmentContract')">📄<span>ملف PDF - اضغط للفتح</span></div>
         </div>
       </div>
     </div>
@@ -706,14 +736,14 @@ function renderClients(){
 
     let docThumbs = '';
     if (c.clientType === 'merchant'){
-      if (c.commercialRegUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.commercialRegUrl}')"><img src="${c.commercialRegUrl}"><span>السجل التجاري</span></div>`;
-      if (c.taxCardUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.taxCardUrl}')"><img src="${c.taxCardUrl}"><span>البطاقة الضريبية</span></div>`;
-    } else {
-      if (c.idCardUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.idCardUrl}')"><img src="${c.idCardUrl}"><span>البطاقة الشخصية</span></div>`;
+      if (c.commercialRegUrl) docThumbs += docThumbHtml(c.commercialRegUrl, 'السجل التجاري');
+      if (c.taxCardUrl) docThumbs += docThumbHtml(c.taxCardUrl, 'البطاقة الضريبية');
     }
-    if (c.hasInsurance && c.insuranceUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.insuranceUrl}')"><img src="${c.insuranceUrl}"><span>التأمين الطبي</span></div>`;
-    if (c.hasWorkId && c.workIdUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.workIdUrl}')"><img src="${c.workIdUrl}"><span>كارنيه الشغل</span></div>`;
-    if (c.hasApartmentContract && c.apartmentContractUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.apartmentContractUrl}')"><img src="${c.apartmentContractUrl}"><span>عقد الشقة</span></div>`;
+    if (c.idCardFrontUrl) docThumbs += docThumbHtml(c.idCardFrontUrl, 'البطاقة (وش)');
+    if (c.idCardBackUrl) docThumbs += docThumbHtml(c.idCardBackUrl, 'البطاقة (ضهر)');
+    if (c.hasInsurance && c.insuranceUrl) docThumbs += docThumbHtml(c.insuranceUrl, 'التأمين الطبي');
+    if (c.hasWorkId && c.workIdUrl) docThumbs += docThumbHtml(c.workIdUrl, 'كارنيه الشغل');
+    if (c.hasApartmentContract && c.apartmentContractUrl) docThumbs += docThumbHtml(c.apartmentContractUrl, 'عقد الشقة');
 
     const dateStr = c.createdAt && c.createdAt.toDate ? c.createdAt.toDate().toLocaleDateString('ar-EG') : '';
     return `
@@ -752,6 +782,13 @@ function escapeHtml(str){
   return d.innerHTML;
 }
 
+function docThumbHtml(url, label){
+  if (isPdfUrl(url)){
+    return `<div class="doc-thumb doc-thumb-pdf" onclick="window.open('${url}','_blank')"><div class="pdf-thumb-ic">📄</div><span>${escapeHtml(label)}</span></div>`;
+  }
+  return `<div class="doc-thumb" onclick="openLightbox('${url}')"><img src="${url}"><span>${escapeHtml(label)}</span></div>`;
+}
+
 /* ---------------- Modal ---------------- */
 function openModal(){
   editingId = null;
@@ -761,7 +798,7 @@ function openModal(){
   document.getElementById('fGov').value = 'القاهرة والجيزة والإسكندرية';
   document.getElementById('fAmount').value = '';
   document.getElementById('fNotes').value = '';
-  resetPreview('commercialReg'); resetPreview('taxCard'); resetPreview('idCard');
+  resetPreview('commercialReg'); resetPreview('taxCard'); resetPreview('idCardFront'); resetPreview('idCardBack');
   setExtraDocState('insurance', false, '');
   setExtraDocState('workId', false, '');
   setExtraDocState('apartmentContract', false, '');
@@ -782,8 +819,9 @@ function editClient(id){
 
   document.getElementById('fCommercial').value = c.commercialRegUrl || '';
   document.getElementById('fTax').value = c.taxCardUrl || '';
-  document.getElementById('fIdCard').value = c.idCardUrl || '';
-  updatePreview('commercialReg'); updatePreview('taxCard'); updatePreview('idCard');
+  document.getElementById('fIdCardFront').value = c.idCardFrontUrl || '';
+  document.getElementById('fIdCardBack').value = c.idCardBackUrl || '';
+  updatePreview('commercialReg'); updatePreview('taxCard'); updatePreview('idCardFront'); updatePreview('idCardBack');
   setExtraDocState('insurance', !!c.hasInsurance, c.insuranceUrl || '');
   setExtraDocState('workId', !!c.hasWorkId, c.workIdUrl || '');
   setExtraDocState('apartmentContract', !!c.hasApartmentContract, c.apartmentContractUrl || '');
@@ -801,24 +839,41 @@ function setClientType(type){
   document.getElementById('optMerchant').classList.toggle('active', type==='merchant');
   document.getElementById('optEmployee').classList.toggle('active', type==='employee');
   document.getElementById('merchantFields').classList.toggle('open', type==='merchant');
-  document.getElementById('employeeFields').classList.toggle('open', type==='employee');
 }
 
 /* ---------------- معاينة لينك الصورة ---------------- */
-const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCard:'previewIdCard', insurance:'previewInsurance', workId:'previewWorkId', apartmentContract:'previewApartmentContract' };
-const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCard:'fIdCard', insurance:'fInsurance', workId:'fWorkId', apartmentContract:'fApartmentContract' };
+const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCardFront:'previewIdCardFront', idCardBack:'previewIdCardBack', insurance:'previewInsurance', workId:'previewWorkId', apartmentContract:'previewApartmentContract' };
+const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCardFront:'fIdCardFront', idCardBack:'fIdCardBack', insurance:'fInsurance', workId:'fWorkId', apartmentContract:'fApartmentContract' };
+
+function isPdfUrl(url){
+  return /\.pdf(\?|#|$)/i.test(url);
+}
 
 function updatePreview(key){
   const url = document.getElementById(previewInputIds[key]).value.trim();
   const img = document.getElementById(previewImgIds[key]);
+  const pdfInd = document.getElementById('pdf' + previewImgIds[key]);
   if (!url){
     img.classList.remove('show');
     img.src = '';
+    pdfInd.classList.add('hidden');
     return;
   }
+  if (isPdfUrl(url)){
+    img.classList.remove('show');
+    img.src = '';
+    pdfInd.classList.remove('hidden');
+    return;
+  }
+  pdfInd.classList.add('hidden');
   img.onload = () => img.classList.add('show');
   img.onerror = () => img.classList.remove('show');
   img.src = url;
+}
+
+function openDocLink(key){
+  const url = document.getElementById(previewInputIds[key]).value.trim();
+  if (url) window.open(url, '_blank');
 }
 
 function resetPreview(key){
@@ -826,6 +881,7 @@ function resetPreview(key){
   const img = document.getElementById(previewImgIds[key]);
   img.classList.remove('show');
   img.src = '';
+  document.getElementById('pdf' + previewImgIds[key]).classList.add('hidden');
 }
 
 /* ---------------- مستندات إضافية (تأمين طبي / كارنيه شغل) ---------------- */
@@ -858,7 +914,8 @@ async function saveClient(){
   const notes = document.getElementById('fNotes').value.trim();
   const commercialRegUrl = document.getElementById('fCommercial').value.trim();
   const taxCardUrl = document.getElementById('fTax').value.trim();
-  const idCardUrl = document.getElementById('fIdCard').value.trim();
+  const idCardFrontUrl = document.getElementById('fIdCardFront').value.trim();
+  const idCardBackUrl = document.getElementById('fIdCardBack').value.trim();
   const hasInsurance = document.getElementById('chkInsurance').checked;
   const insuranceUrl = document.getElementById('fInsurance').value.trim();
   const hasWorkId = document.getElementById('chkWorkId').checked;
@@ -881,7 +938,8 @@ async function saveClient(){
     clientType: selectedType,
     commercialRegUrl: selectedType==='merchant' ? commercialRegUrl : '',
     taxCardUrl: selectedType==='merchant' ? taxCardUrl : '',
-    idCardUrl: selectedType==='employee' ? idCardUrl : '',
+    idCardFrontUrl,
+    idCardBackUrl,
     hasInsurance,
     insuranceUrl: hasInsurance ? insuranceUrl : '',
     hasWorkId,
