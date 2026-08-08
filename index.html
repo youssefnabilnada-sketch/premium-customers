@@ -510,6 +510,19 @@
           <img id="previewWorkId" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
         </div>
       </div>
+
+      <div class="extra-doc-row">
+        <label class="chk-wrap">
+          <input type="checkbox" id="chkApartmentContract" onchange="toggleExtraDoc('apartmentContract')">
+          <span>معاه عقد شقة (تقسيط عربية)</span>
+        </label>
+      </div>
+      <div class="extra-doc-fields" id="extraFieldsApartmentContract">
+        <input type="url" id="fApartmentContract" placeholder="https://... لينك صورة عقد الشقة" oninput="updatePreview('apartmentContract')">
+        <div class="link-preview" id="previewBoxApartmentContract">
+          <img id="previewApartmentContract" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
+        </div>
+      </div>
     </div>
 
     <div class="field">
@@ -700,6 +713,7 @@ function renderClients(){
     }
     if (c.hasInsurance && c.insuranceUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.insuranceUrl}')"><img src="${c.insuranceUrl}"><span>التأمين الطبي</span></div>`;
     if (c.hasWorkId && c.workIdUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.workIdUrl}')"><img src="${c.workIdUrl}"><span>كارنيه الشغل</span></div>`;
+    if (c.hasApartmentContract && c.apartmentContractUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.apartmentContractUrl}')"><img src="${c.apartmentContractUrl}"><span>عقد الشقة</span></div>`;
 
     const dateStr = c.createdAt && c.createdAt.toDate ? c.createdAt.toDate().toLocaleDateString('ar-EG') : '';
     return `
@@ -750,6 +764,7 @@ function openModal(){
   resetPreview('commercialReg'); resetPreview('taxCard'); resetPreview('idCard');
   setExtraDocState('insurance', false, '');
   setExtraDocState('workId', false, '');
+  setExtraDocState('apartmentContract', false, '');
   setClientType('merchant');
   document.getElementById('modalOverlay').classList.remove('hidden');
 }
@@ -771,6 +786,7 @@ function editClient(id){
   updatePreview('commercialReg'); updatePreview('taxCard'); updatePreview('idCard');
   setExtraDocState('insurance', !!c.hasInsurance, c.insuranceUrl || '');
   setExtraDocState('workId', !!c.hasWorkId, c.workIdUrl || '');
+  setExtraDocState('apartmentContract', !!c.hasApartmentContract, c.apartmentContractUrl || '');
 
   setClientType(c.clientType || 'merchant');
   document.getElementById('modalOverlay').classList.remove('hidden');
@@ -789,8 +805,8 @@ function setClientType(type){
 }
 
 /* ---------------- معاينة لينك الصورة ---------------- */
-const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCard:'previewIdCard', insurance:'previewInsurance', workId:'previewWorkId' };
-const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCard:'fIdCard', insurance:'fInsurance', workId:'fWorkId' };
+const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCard:'previewIdCard', insurance:'previewInsurance', workId:'previewWorkId', apartmentContract:'previewApartmentContract' };
+const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCard:'fIdCard', insurance:'fInsurance', workId:'fWorkId', apartmentContract:'fApartmentContract' };
 
 function updatePreview(key){
   const url = document.getElementById(previewInputIds[key]).value.trim();
@@ -815,7 +831,8 @@ function resetPreview(key){
 /* ---------------- مستندات إضافية (تأمين طبي / كارنيه شغل) ---------------- */
 const extraDocElIds = {
   insurance: { checkbox:'chkInsurance', fields:'extraFieldsInsurance' },
-  workId:    { checkbox:'chkWorkId',    fields:'extraFieldsWorkId' }
+  workId:    { checkbox:'chkWorkId',    fields:'extraFieldsWorkId' },
+  apartmentContract: { checkbox:'chkApartmentContract', fields:'extraFieldsApartmentContract' }
 };
 
 function toggleExtraDoc(key){
@@ -846,6 +863,8 @@ async function saveClient(){
   const insuranceUrl = document.getElementById('fInsurance').value.trim();
   const hasWorkId = document.getElementById('chkWorkId').checked;
   const workIdUrl = document.getElementById('fWorkId').value.trim();
+  const hasApartmentContract = document.getElementById('chkApartmentContract').checked;
+  const apartmentContractUrl = document.getElementById('fApartmentContract').value.trim();
 
   if (!name){
     showToast('اكتب اسم العميل', 'err');
@@ -867,6 +886,8 @@ async function saveClient(){
     insuranceUrl: hasInsurance ? insuranceUrl : '',
     hasWorkId,
     workIdUrl: hasWorkId ? workIdUrl : '',
+    hasApartmentContract,
+    apartmentContractUrl: hasApartmentContract ? apartmentContractUrl : '',
     amount: Number(amount) || 0,
     notes,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
