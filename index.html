@@ -269,7 +269,7 @@
     overflow:hidden;
   }
   .link-preview img{ display:none; width:100%; height:100%; object-fit:cover; }
-  .link-preview img.show{ display:block; }
+  .link-preview img.show{ display:block; cursor:pointer; }
   .link-preview:not(:has(img.show))::after{
     content:'هتظهر معاينة الصورة هنا'; font-size:11.5px; color:var(--text-1);
   }
@@ -460,14 +460,14 @@
           <label>لينك صورة السجل التجاري</label>
           <input type="url" id="fCommercial" placeholder="https://..." oninput="updatePreview('commercialReg')">
           <div class="link-preview" id="previewBoxCommercial">
-            <img id="previewCommercial">
+            <img id="previewCommercial" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
           </div>
         </div>
         <div class="field">
           <label>لينك صورة البطاقة الضريبية</label>
           <input type="url" id="fTax" placeholder="https://..." oninput="updatePreview('taxCard')">
           <div class="link-preview" id="previewBoxTax">
-            <img id="previewTax">
+            <img id="previewTax" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
           </div>
         </div>
       </div>
@@ -478,7 +478,7 @@
         <label>لينك صورة البطاقة الشخصية</label>
         <input type="url" id="fIdCard" placeholder="https://..." oninput="updatePreview('idCard')">
         <div class="link-preview" id="previewBoxIdCard">
-          <img id="previewIdCard">
+          <img id="previewIdCard" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
         </div>
       </div>
     </div>
@@ -494,7 +494,7 @@
       <div class="extra-doc-fields" id="extraFieldsInsurance">
         <input type="url" id="fInsurance" placeholder="https://... لينك صورة التأمين الطبي" oninput="updatePreview('insurance')">
         <div class="link-preview" id="previewBoxInsurance">
-          <img id="previewInsurance">
+          <img id="previewInsurance" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
         </div>
       </div>
 
@@ -507,13 +507,13 @@
       <div class="extra-doc-fields" id="extraFieldsWorkId">
         <input type="url" id="fWorkId" placeholder="https://... لينك صورة كارنيه الشغل" oninput="updatePreview('workId')">
         <div class="link-preview" id="previewBoxWorkId">
-          <img id="previewWorkId">
+          <img id="previewWorkId" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
         </div>
       </div>
     </div>
 
     <div class="field">
-      <label>قيمة الصفقة (ج.م)</label>
+      <label>قيمة الصفقة (ج.م) <span style="color:var(--text-1); font-weight:400;">(اختياري)</span></label>
       <input type="number" id="fAmount" placeholder="مثال: 58900">
     </div>
 
@@ -716,10 +716,11 @@ function renderClients(){
         </div>
         ${docThumbs ? `<div class="doc-thumbs">${docThumbs}</div>` : ''}
         ${c.notes ? `<div class="cc-notes">${escapeHtml(c.notes)}</div>` : ''}
+        ${Number(c.amount||0) > 0 ? `
         <div class="cc-amount">
           <span class="lbl">قيمة الصفقة</span>
-          <span class="val">${Number(c.amount||0).toLocaleString('en-US')} ج.م</span>
-        </div>
+          <span class="val">${Number(c.amount).toLocaleString('en-US')} ج.م</span>
+        </div>` : ''}
         <div class="cc-foot">
           <span class="cc-date">${dateStr}</span>
           <div class="cc-actions">
