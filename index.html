@@ -405,9 +405,8 @@
       </div>
       <select class="filter-chip" id="filterGov" onchange="renderClients()">
         <option value="">كل المحافظات</option>
-        <option value="القاهرة">القاهرة</option>
-        <option value="الجيزة">الجيزة</option>
-        <option value="الإسكندرية">الإسكندرية</option>
+        <option value="القاهرة والجيزة والإسكندرية">القاهرة والجيزة والإسكندرية</option>
+        <option value="محافظات أخرى">محافظات أخرى</option>
       </select>
       <select class="filter-chip" id="filterType" onchange="renderClients()">
         <option value="">كل الأنواع</option>
@@ -441,9 +440,8 @@
       <div class="field">
         <label>المحافظة</label>
         <select id="fGov">
-          <option value="القاهرة">القاهرة</option>
-          <option value="الجيزة">الجيزة</option>
-          <option value="الإسكندرية">الإسكندرية</option>
+          <option value="القاهرة والجيزة والإسكندرية">القاهرة والجيزة والإسكندرية</option>
+          <option value="محافظات أخرى">محافظات أخرى</option>
         </select>
       </div>
     </div>
@@ -745,7 +743,7 @@ function openModal(){
   document.getElementById('modalTitle').textContent = 'إضافة عميل جديد';
   document.getElementById('fName').value = '';
   document.getElementById('fPhone').value = '';
-  document.getElementById('fGov').value = 'القاهرة';
+  document.getElementById('fGov').value = 'القاهرة والجيزة والإسكندرية';
   document.getElementById('fAmount').value = '';
   document.getElementById('fNotes').value = '';
   resetPreview('commercialReg'); resetPreview('taxCard'); resetPreview('idCard');
@@ -762,7 +760,7 @@ function editClient(id){
   document.getElementById('modalTitle').textContent = 'تعديل بيانات العميل';
   document.getElementById('fName').value = c.name || '';
   document.getElementById('fPhone').value = c.phone || '';
-  document.getElementById('fGov').value = c.governorate || 'القاهرة';
+  document.getElementById('fGov').value = c.governorate || 'القاهرة والجيزة والإسكندرية';
   document.getElementById('fAmount').value = c.amount || '';
   document.getElementById('fNotes').value = c.notes || '';
 
