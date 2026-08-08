@@ -273,6 +273,26 @@
   .link-preview:not(:has(img.show))::after{
     content:'هتظهر معاينة الصورة هنا'; font-size:11.5px; color:var(--text-1);
   }
+
+  .extra-doc-row{ margin-bottom:8px; }
+  .chk-wrap{
+    display:flex; align-items:center; gap:9px; cursor:pointer;
+    font-size:13.5px; color:var(--text-0); user-select:none;
+  }
+  .chk-wrap input[type="checkbox"]{
+    width:19px; height:19px; accent-color:var(--gold); cursor:pointer;
+  }
+  .extra-doc-fields{
+    overflow:hidden; max-height:0; transition:.3s max-height;
+    margin-bottom:4px;
+  }
+  .extra-doc-fields.open{ max-height:160px; margin-bottom:14px; }
+  .extra-doc-fields input{
+    width:100%; padding:12px 14px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09);
+    border-radius:12px; color:var(--text-0); font-size:14px;
+  }
+  .extra-doc-fields input:focus{ outline:none; border-color:var(--gold); }
   .modal-actions{ display:flex; gap:10px; margin-top:22px; }
   .btn-ghost{
     flex:1; padding:13px; border-radius:12px; font-weight:700; font-size:14px;
@@ -466,6 +486,35 @@
     </div>
 
     <div class="field">
+      <label>مستندات إضافية</label>
+      <div class="extra-doc-row">
+        <label class="chk-wrap">
+          <input type="checkbox" id="chkInsurance" onchange="toggleExtraDoc('insurance')">
+          <span>معاه تأمين طبي</span>
+        </label>
+      </div>
+      <div class="extra-doc-fields" id="extraFieldsInsurance">
+        <input type="url" id="fInsurance" placeholder="https://... لينك صورة التأمين الطبي" oninput="updatePreview('insurance')">
+        <div class="link-preview" id="previewBoxInsurance">
+          <img id="previewInsurance">
+        </div>
+      </div>
+
+      <div class="extra-doc-row">
+        <label class="chk-wrap">
+          <input type="checkbox" id="chkWorkId" onchange="toggleExtraDoc('workId')">
+          <span>معاه كارنيه شغل</span>
+        </label>
+      </div>
+      <div class="extra-doc-fields" id="extraFieldsWorkId">
+        <input type="url" id="fWorkId" placeholder="https://... لينك صورة كارنيه الشغل" oninput="updatePreview('workId')">
+        <div class="link-preview" id="previewBoxWorkId">
+          <img id="previewWorkId">
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
       <label>قيمة الصفقة (ج.م)</label>
       <input type="number" id="fAmount" placeholder="مثال: 58900">
     </div>
@@ -651,6 +700,8 @@ function renderClients(){
     } else {
       if (c.idCardUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.idCardUrl}')"><img src="${c.idCardUrl}"><span>البطاقة الشخصية</span></div>`;
     }
+    if (c.hasInsurance && c.insuranceUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.insuranceUrl}')"><img src="${c.insuranceUrl}"><span>التأمين الطبي</span></div>`;
+    if (c.hasWorkId && c.workIdUrl) docThumbs += `<div class="doc-thumb" onclick="openLightbox('${c.workIdUrl}')"><img src="${c.workIdUrl}"><span>كارنيه الشغل</span></div>`;
 
     const dateStr = c.createdAt && c.createdAt.toDate ? c.createdAt.toDate().toLocaleDateString('ar-EG') : '';
     return `
@@ -698,6 +749,8 @@ function openModal(){
   document.getElementById('fAmount').value = '';
   document.getElementById('fNotes').value = '';
   resetPreview('commercialReg'); resetPreview('taxCard'); resetPreview('idCard');
+  setExtraDocState('insurance', false, '');
+  setExtraDocState('workId', false, '');
   setClientType('merchant');
   document.getElementById('modalOverlay').classList.remove('hidden');
 }
@@ -717,6 +770,8 @@ function editClient(id){
   document.getElementById('fTax').value = c.taxCardUrl || '';
   document.getElementById('fIdCard').value = c.idCardUrl || '';
   updatePreview('commercialReg'); updatePreview('taxCard'); updatePreview('idCard');
+  setExtraDocState('insurance', !!c.hasInsurance, c.insuranceUrl || '');
+  setExtraDocState('workId', !!c.hasWorkId, c.workIdUrl || '');
 
   setClientType(c.clientType || 'merchant');
   document.getElementById('modalOverlay').classList.remove('hidden');
@@ -735,8 +790,8 @@ function setClientType(type){
 }
 
 /* ---------------- معاينة لينك الصورة ---------------- */
-const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCard:'previewIdCard' };
-const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCard:'fIdCard' };
+const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCard:'previewIdCard', insurance:'previewInsurance', workId:'previewWorkId' };
+const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCard:'fIdCard', insurance:'fInsurance', workId:'fWorkId' };
 
 function updatePreview(key){
   const url = document.getElementById(previewInputIds[key]).value.trim();
@@ -758,6 +813,27 @@ function resetPreview(key){
   img.src = '';
 }
 
+/* ---------------- مستندات إضافية (تأمين طبي / كارنيه شغل) ---------------- */
+const extraDocElIds = {
+  insurance: { checkbox:'chkInsurance', fields:'extraFieldsInsurance' },
+  workId:    { checkbox:'chkWorkId',    fields:'extraFieldsWorkId' }
+};
+
+function toggleExtraDoc(key){
+  const ids = extraDocElIds[key];
+  const checked = document.getElementById(ids.checkbox).checked;
+  document.getElementById(ids.fields).classList.toggle('open', checked);
+  if (!checked) resetPreview(key);
+}
+
+function setExtraDocState(key, hasIt, url){
+  const ids = extraDocElIds[key];
+  document.getElementById(ids.checkbox).checked = !!hasIt;
+  document.getElementById(ids.fields).classList.toggle('open', !!hasIt);
+  document.getElementById(previewInputIds[key]).value = url || '';
+  if (hasIt && url) updatePreview(key);
+}
+
 async function saveClient(){
   const name = document.getElementById('fName').value.trim();
   const phone = document.getElementById('fPhone').value.trim();
@@ -767,6 +843,10 @@ async function saveClient(){
   const commercialRegUrl = document.getElementById('fCommercial').value.trim();
   const taxCardUrl = document.getElementById('fTax').value.trim();
   const idCardUrl = document.getElementById('fIdCard').value.trim();
+  const hasInsurance = document.getElementById('chkInsurance').checked;
+  const insuranceUrl = document.getElementById('fInsurance').value.trim();
+  const hasWorkId = document.getElementById('chkWorkId').checked;
+  const workIdUrl = document.getElementById('fWorkId').value.trim();
 
   if (!name){
     showToast('اكتب اسم العميل', 'err');
@@ -784,6 +864,10 @@ async function saveClient(){
     commercialRegUrl: selectedType==='merchant' ? commercialRegUrl : '',
     taxCardUrl: selectedType==='merchant' ? taxCardUrl : '',
     idCardUrl: selectedType==='employee' ? idCardUrl : '',
+    hasInsurance,
+    insuranceUrl: hasInsurance ? insuranceUrl : '',
+    hasWorkId,
+    workIdUrl: hasWorkId ? workIdUrl : '',
     amount: Number(amount) || 0,
     notes,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
