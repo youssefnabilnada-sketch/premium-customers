@@ -301,13 +301,39 @@
     overflow:hidden; max-height:0; transition:.3s max-height;
     margin-bottom:4px;
   }
-  .extra-doc-fields.open{ max-height:160px; margin-bottom:14px; }
+  .extra-doc-fields.open{ max-height:340px; margin-bottom:14px; overflow-y:auto; }
   .extra-doc-fields input{
     width:100%; padding:12px 14px;
     background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09);
     border-radius:12px; color:var(--text-0); font-size:14px;
   }
   .extra-doc-fields input:focus{ outline:none; border-color:var(--gold); }
+
+  .multi-doc-add{ display:flex; gap:8px; }
+  .multi-doc-add input{ flex:1; }
+  .multi-doc-add-btn{
+    padding:0 16px; border-radius:12px; white-space:nowrap;
+    background:linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color:#161005; font-weight:800; font-size:13px;
+  }
+  .multi-doc-add-btn:hover{ filter:brightness(1.05); }
+  .multi-doc-list{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .multi-doc-item{ position:relative; width:66px; }
+  .multi-doc-item img, .multi-doc-item .pdf-mini{
+    width:66px; height:50px; object-fit:cover; border-radius:9px;
+    border:1px solid rgba(255,255,255,0.14); cursor:pointer;
+  }
+  .multi-doc-item .pdf-mini{
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+    background:rgba(255,255,255,0.04);
+  }
+  .multi-doc-item .rm-btn{
+    position:absolute; top:-6px; left:-6px;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--danger); color:#fff; font-size:11px;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid rgba(255,255,255,0.3);
+  }
   .modal-actions{ display:flex; gap:10px; margin-top:22px; }
   .btn-ghost{
     flex:1; padding:13px; border-radius:12px; font-weight:700; font-size:14px;
@@ -519,11 +545,11 @@
         </label>
       </div>
       <div class="extra-doc-fields" id="extraFieldsInsurance">
-        <input type="url" id="fInsurance" placeholder="https://... لينك صورة التأمين الطبي" oninput="updatePreview('insurance')">
-        <div class="link-preview" id="previewBoxInsurance">
-          <img id="previewInsurance" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
-          <div class="pdf-indicator hidden" id="pdfpreviewInsurance" onclick="openDocLink('insurance')">📄<span>ملف PDF - اضغط للفتح</span></div>
+        <div class="multi-doc-add">
+          <input type="url" id="fInsurance" placeholder="https://... لينك صورة التأمين الطبي">
+          <button type="button" class="multi-doc-add-btn" onclick="addMultiDocUrl('insurance')">+ إضافة</button>
         </div>
+        <div class="multi-doc-list" id="listInsurance"></div>
       </div>
 
       <div class="extra-doc-row">
@@ -533,17 +559,31 @@
         </label>
       </div>
       <div class="extra-doc-fields" id="extraFieldsWorkId">
-        <input type="url" id="fWorkId" placeholder="https://... لينك صورة كارنيه الشغل" oninput="updatePreview('workId')">
-        <div class="link-preview" id="previewBoxWorkId">
-          <img id="previewWorkId" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
-          <div class="pdf-indicator hidden" id="pdfpreviewWorkId" onclick="openDocLink('workId')">📄<span>ملف PDF - اضغط للفتح</span></div>
+        <div class="multi-doc-add">
+          <input type="url" id="fWorkId" placeholder="https://... لينك صورة كارنيه الشغل">
+          <button type="button" class="multi-doc-add-btn" onclick="addMultiDocUrl('workId')">+ إضافة</button>
         </div>
+        <div class="multi-doc-list" id="listWorkId"></div>
+      </div>
+
+      <div class="extra-doc-row">
+        <label class="chk-wrap">
+          <input type="checkbox" id="chkClubCard" onchange="toggleExtraDoc('clubCard')">
+          <span>معاه كارنيه نادي</span>
+        </label>
+      </div>
+      <div class="extra-doc-fields" id="extraFieldsClubCard">
+        <div class="multi-doc-add">
+          <input type="url" id="fClubCard" placeholder="https://... لينك صورة كارنيه النادي">
+          <button type="button" class="multi-doc-add-btn" onclick="addMultiDocUrl('clubCard')">+ إضافة</button>
+        </div>
+        <div class="multi-doc-list" id="listClubCard"></div>
       </div>
 
       <div class="extra-doc-row">
         <label class="chk-wrap">
           <input type="checkbox" id="chkApartmentContract" onchange="toggleExtraDoc('apartmentContract')">
-          <span>معاه عقد شقة (تقسيط عربية)</span>
+          <span>معاه عقد شقة</span>
         </label>
       </div>
       <div class="extra-doc-fields" id="extraFieldsApartmentContract">
@@ -552,6 +592,20 @@
           <img id="previewApartmentContract" onclick="if(this.classList.contains('show')) openLightbox(this.src)">
           <div class="pdf-indicator hidden" id="pdfpreviewApartmentContract" onclick="openDocLink('apartmentContract')">📄<span>ملف PDF - اضغط للفتح</span></div>
         </div>
+      </div>
+
+      <div class="extra-doc-row">
+        <label class="chk-wrap">
+          <input type="checkbox" id="chkCarLicense" onchange="toggleExtraDoc('carLicense')">
+          <span>معاه رخصة العربية</span>
+        </label>
+      </div>
+      <div class="extra-doc-fields" id="extraFieldsCarLicense">
+        <div class="multi-doc-add">
+          <input type="url" id="fCarLicense" placeholder="https://... لينك صورة رخصة العربية">
+          <button type="button" class="multi-doc-add-btn" onclick="addMultiDocUrl('carLicense')">+ إضافة</button>
+        </div>
+        <div class="multi-doc-list" id="listCarLicense"></div>
       </div>
     </div>
 
@@ -741,9 +795,11 @@ function renderClients(){
     }
     if (c.idCardFrontUrl) docThumbs += docThumbHtml(c.idCardFrontUrl, 'البطاقة (وش)');
     if (c.idCardBackUrl) docThumbs += docThumbHtml(c.idCardBackUrl, 'البطاقة (ضهر)');
-    if (c.hasInsurance && c.insuranceUrl) docThumbs += docThumbHtml(c.insuranceUrl, 'التأمين الطبي');
-    if (c.hasWorkId && c.workIdUrl) docThumbs += docThumbHtml(c.workIdUrl, 'كارنيه الشغل');
+    if (c.hasInsurance) docThumbs += multiDocThumbHtml(c.insuranceUrls || c.insuranceUrl, 'تأمين طبي');
+    if (c.hasWorkId) docThumbs += multiDocThumbHtml(c.workIdUrls || c.workIdUrl, 'كارنيه شغل');
+    if (c.hasClubCard) docThumbs += multiDocThumbHtml(c.clubCardUrls, 'كارنيه نادي');
     if (c.hasApartmentContract && c.apartmentContractUrl) docThumbs += docThumbHtml(c.apartmentContractUrl, 'عقد الشقة');
+    if (c.hasCarLicense) docThumbs += multiDocThumbHtml(c.carLicenseUrls || c.carLicenseUrl, 'رخصة العربية');
 
     const dateStr = c.createdAt && c.createdAt.toDate ? c.createdAt.toDate().toLocaleDateString('ar-EG') : '';
     return `
@@ -789,6 +845,16 @@ function docThumbHtml(url, label){
   return `<div class="doc-thumb" onclick="openLightbox('${url}')"><img src="${url}"><span>${escapeHtml(label)}</span></div>`;
 }
 
+/* بيقبل أراي من اللينكات، أو لينك واحد قديم (توافق مع بيانات قبل التحديث) */
+function multiDocThumbHtml(urls, label){
+  if (!urls) return '';
+  const list = Array.isArray(urls) ? urls : [urls];
+  return list.filter(Boolean).map((url, i) => {
+    const lbl = list.length > 1 ? `${label} ${i+1}` : label;
+    return docThumbHtml(url, lbl);
+  }).join('');
+}
+
 /* ---------------- Modal ---------------- */
 function openModal(){
   editingId = null;
@@ -799,9 +865,11 @@ function openModal(){
   document.getElementById('fAmount').value = '';
   document.getElementById('fNotes').value = '';
   resetPreview('commercialReg'); resetPreview('taxCard'); resetPreview('idCardFront'); resetPreview('idCardBack');
-  setExtraDocState('insurance', false, '');
-  setExtraDocState('workId', false, '');
+  setExtraDocState('insurance', false, []);
+  setExtraDocState('workId', false, []);
+  setExtraDocState('clubCard', false, []);
   setExtraDocState('apartmentContract', false, '');
+  setExtraDocState('carLicense', false, []);
   setClientType('merchant');
   document.getElementById('modalOverlay').classList.remove('hidden');
 }
@@ -822,9 +890,11 @@ function editClient(id){
   document.getElementById('fIdCardFront').value = c.idCardFrontUrl || '';
   document.getElementById('fIdCardBack').value = c.idCardBackUrl || '';
   updatePreview('commercialReg'); updatePreview('taxCard'); updatePreview('idCardFront'); updatePreview('idCardBack');
-  setExtraDocState('insurance', !!c.hasInsurance, c.insuranceUrl || '');
-  setExtraDocState('workId', !!c.hasWorkId, c.workIdUrl || '');
+  setExtraDocState('insurance', !!c.hasInsurance, c.insuranceUrls || c.insuranceUrl || []);
+  setExtraDocState('workId', !!c.hasWorkId, c.workIdUrls || c.workIdUrl || []);
+  setExtraDocState('clubCard', !!c.hasClubCard, c.clubCardUrls || []);
   setExtraDocState('apartmentContract', !!c.hasApartmentContract, c.apartmentContractUrl || '');
+  setExtraDocState('carLicense', !!c.hasCarLicense, c.carLicenseUrls || c.carLicenseUrl || []);
 
   setClientType(c.clientType || 'merchant');
   document.getElementById('modalOverlay').classList.remove('hidden');
@@ -842,8 +912,8 @@ function setClientType(type){
 }
 
 /* ---------------- معاينة لينك الصورة ---------------- */
-const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCardFront:'previewIdCardFront', idCardBack:'previewIdCardBack', insurance:'previewInsurance', workId:'previewWorkId', apartmentContract:'previewApartmentContract' };
-const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCardFront:'fIdCardFront', idCardBack:'fIdCardBack', insurance:'fInsurance', workId:'fWorkId', apartmentContract:'fApartmentContract' };
+const previewImgIds = { commercialReg:'previewCommercial', taxCard:'previewTax', idCardFront:'previewIdCardFront', idCardBack:'previewIdCardBack', apartmentContract:'previewApartmentContract' };
+const previewInputIds = { commercialReg:'fCommercial', taxCard:'fTax', idCardFront:'fIdCardFront', idCardBack:'fIdCardBack', apartmentContract:'fApartmentContract' };
 
 function isPdfUrl(url){
   return /\.pdf(\?|#|$)/i.test(url);
@@ -888,22 +958,75 @@ function resetPreview(key){
 const extraDocElIds = {
   insurance: { checkbox:'chkInsurance', fields:'extraFieldsInsurance' },
   workId:    { checkbox:'chkWorkId',    fields:'extraFieldsWorkId' },
-  apartmentContract: { checkbox:'chkApartmentContract', fields:'extraFieldsApartmentContract' }
+  clubCard:  { checkbox:'chkClubCard',  fields:'extraFieldsClubCard' },
+  apartmentContract: { checkbox:'chkApartmentContract', fields:'extraFieldsApartmentContract' },
+  carLicense: { checkbox:'chkCarLicense', fields:'extraFieldsCarLicense' }
 };
+
+/* المستندات دي بتقبل أكتر من صورة/PDF واحد */
+const multiDocKeys = ['insurance', 'workId', 'clubCard', 'carLicense'];
+const multiDocInputId = { insurance:'fInsurance', workId:'fWorkId', clubCard:'fClubCard', carLicense:'fCarLicense' };
+const multiDocListId  = { insurance:'listInsurance', workId:'listWorkId', clubCard:'listClubCard', carLicense:'listCarLicense' };
+let multiDocState = { insurance:[], workId:[], clubCard:[], carLicense:[] };
+
+function addMultiDocUrl(key){
+  const input = document.getElementById(multiDocInputId[key]);
+  const url = input.value.trim();
+  if (!url){
+    showToast('حط لينك الأول', 'err');
+    return;
+  }
+  multiDocState[key].push(url);
+  input.value = '';
+  renderMultiDocList(key);
+}
+
+function removeMultiDocUrl(key, index){
+  multiDocState[key].splice(index, 1);
+  renderMultiDocList(key);
+}
+
+function renderMultiDocList(key){
+  const container = document.getElementById(multiDocListId[key]);
+  container.innerHTML = multiDocState[key].map((url, i) => {
+    const inner = isPdfUrl(url)
+      ? `<div class="pdf-mini" onclick="window.open('${url}','_blank')">📄</div>`
+      : `<img src="${url}" onclick="openLightbox('${url}')">`;
+    return `<div class="multi-doc-item">${inner}<button type="button" class="rm-btn" onclick="removeMultiDocUrl('${key}',${i})">✕</button></div>`;
+  }).join('');
+}
+
+function resetMultiDoc(key){
+  multiDocState[key] = [];
+  document.getElementById(multiDocInputId[key]).value = '';
+  renderMultiDocList(key);
+}
+
+function loadMultiDoc(key, urls){
+  multiDocState[key] = Array.isArray(urls) ? [...urls] : (urls ? [urls] : []);
+  renderMultiDocList(key);
+}
 
 function toggleExtraDoc(key){
   const ids = extraDocElIds[key];
   const checked = document.getElementById(ids.checkbox).checked;
   document.getElementById(ids.fields).classList.toggle('open', checked);
-  if (!checked) resetPreview(key);
+  if (!checked){
+    if (multiDocKeys.includes(key)) resetMultiDoc(key);
+    else resetPreview(key);
+  }
 }
 
-function setExtraDocState(key, hasIt, url){
+function setExtraDocState(key, hasIt, data){
   const ids = extraDocElIds[key];
   document.getElementById(ids.checkbox).checked = !!hasIt;
   document.getElementById(ids.fields).classList.toggle('open', !!hasIt);
-  document.getElementById(previewInputIds[key]).value = url || '';
-  if (hasIt && url) updatePreview(key);
+  if (multiDocKeys.includes(key)){
+    loadMultiDoc(key, hasIt ? data : []);
+  } else {
+    document.getElementById(previewInputIds[key]).value = data || '';
+    if (hasIt && data) updatePreview(key);
+  }
 }
 
 async function saveClient(){
@@ -917,11 +1040,11 @@ async function saveClient(){
   const idCardFrontUrl = document.getElementById('fIdCardFront').value.trim();
   const idCardBackUrl = document.getElementById('fIdCardBack').value.trim();
   const hasInsurance = document.getElementById('chkInsurance').checked;
-  const insuranceUrl = document.getElementById('fInsurance').value.trim();
   const hasWorkId = document.getElementById('chkWorkId').checked;
-  const workIdUrl = document.getElementById('fWorkId').value.trim();
+  const hasClubCard = document.getElementById('chkClubCard').checked;
   const hasApartmentContract = document.getElementById('chkApartmentContract').checked;
   const apartmentContractUrl = document.getElementById('fApartmentContract').value.trim();
+  const hasCarLicense = document.getElementById('chkCarLicense').checked;
 
   if (!name){
     showToast('اكتب اسم العميل', 'err');
@@ -941,11 +1064,15 @@ async function saveClient(){
     idCardFrontUrl,
     idCardBackUrl,
     hasInsurance,
-    insuranceUrl: hasInsurance ? insuranceUrl : '',
+    insuranceUrls: hasInsurance ? multiDocState.insurance : [],
     hasWorkId,
-    workIdUrl: hasWorkId ? workIdUrl : '',
+    workIdUrls: hasWorkId ? multiDocState.workId : [],
+    hasClubCard,
+    clubCardUrls: hasClubCard ? multiDocState.clubCard : [],
     hasApartmentContract,
     apartmentContractUrl: hasApartmentContract ? apartmentContractUrl : '',
+    hasCarLicense,
+    carLicenseUrls: hasCarLicense ? multiDocState.carLicense : [],
     amount: Number(amount) || 0,
     notes,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
